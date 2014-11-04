@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // counter resolution 1ms
 // NOTE: union { uint32_t timer32; struct { uint16_t dummy; uint16_t timer16; }}
 volatile uint32_t timer_count = 0;
-
+#if !defined(__AVR_ATmega32__)
 void timer_init(void)
 {
     // Timer0 CTC mode
@@ -47,7 +47,31 @@ void timer_init(void)
     OCR0A = TIMER_RAW_TOP;
     TIMSK0 = (1<<OCIE0A);
 }
+#else
+void timer_init(void)
+{
+    // Timer0 CTC mode
+    TCCR0 |= (1 << WGM01);
 
+#if TIMER_PRESCALER == 1
+    TCCR0 |= 0x01;
+#elif TIMER_PRESCALER == 8
+    TCCR0 |= 0x02;
+#elif TIMER_PRESCALER == 64
+    TCCR0 |= 0x03;
+#elif TIMER_PRESCALER == 256
+    TCCR0 |= 0x04;
+#elif TIMER_PRESCALER == 1024
+    TCCR0 |= 0x05;
+#else
+#   error "Timer prescaler value is NOT vaild."
+#endif
+
+    OCR0 = TIMER_RAW_TOP;
+    TIMSK = (1<<OCIE0);
+}
+
+#endif
 inline
 void timer_clear(void)
 {
@@ -110,7 +134,15 @@ uint32_t timer_elapsed32(uint32_t last)
 }
 
 // excecuted once per 1ms.(excess for just timer count?)
+#if !defined(__AVR_ATmega32__)
 ISR(TIMER0_COMPA_vect)
 {
     timer_count++;
 }
+#else
+ISR(TIMER0_COMP_vect)
+{
+    timer_count++;
+}
+
+#endif

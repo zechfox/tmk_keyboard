@@ -24,7 +24,6 @@ __asm__ __volatile__ (  \
     : "r0"  \
 )
 
-
 void suspend_power_down(void);
 bool suspend_wakeup_condition(void);
 void suspend_wakeup_init(void);

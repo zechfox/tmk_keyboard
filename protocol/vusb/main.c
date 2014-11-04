@@ -47,8 +47,9 @@ int main(void)
 #if USB_COUNT_SOF
     uint16_t last_timer = timer_read();
 #endif
-
+#if !defined(__AVR_ATmega32__)
     CLKPR = 0x80, CLKPR = 0;
+#endif
 #ifndef PS2_USE_USART
     uart_init(UART_BAUD_RATE);
 #endif

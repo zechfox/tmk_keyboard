@@ -10,6 +10,8 @@ void suspend_power_down(void)
     backlight_set(0);
 #endif
 #ifndef NO_SUSPEND_POWER_DOWN
+#if !defined(__AVR_ATmega32__)
+
     // Enable watchdog to wake from MCU sleep
     cli();
     wdt_reset();
@@ -19,6 +21,7 @@ void suspend_power_down(void)
     //WDTCSR |= _BV(WDIE);
     
     // Watchdog Interrupt Mode
+
     wdt_intr_enable(WDTO_120MS);
     
     // TODO: more power saving
@@ -36,6 +39,7 @@ void suspend_power_down(void)
 
     // Disable watchdog after sleep
     wdt_disable();
+#endif
 #endif
 }
 
@@ -60,6 +64,7 @@ void suspend_wakeup_init(void)
 
 #ifndef NO_SUSPEND_POWER_DOWN
 /* watchdog timeout */
+#if !defined(__AVR_ATmega32__)
 ISR(WDT_vect)
 {
     /* wakeup from MCU sleep mode */
@@ -73,4 +78,5 @@ ISR(WDT_vect)
     }
 */
 }
+#endif
 #endif
