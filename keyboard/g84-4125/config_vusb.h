@@ -18,8 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VENDOR_ID       0xFEED
-#define PRODUCT_ID      0xC0FE
+#define VENDOR_ID       0x046A
+#define PRODUCT_ID      0x4125
 // TODO: share these strings with usbconfig.h
 // Edit usbconfig.h to change these.
 #define MANUFACTURER    zechfox
