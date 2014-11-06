@@ -145,7 +145,6 @@ void uart_init(uint32_t baud)
 	// Enable receiver and transmitter and receive complete interrupt 
     UCSRB = ((1<<TXEN)|(1<<RXEN) | (1<<RXCIE));
 	UCSRC = (1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0);
-	DDRD|=0X02;                 //配置TX为输出（很重要）}
 	sei();
 }
 
@@ -160,8 +159,7 @@ void uart_putchar(uint8_t c)
 	//cli();
 	tx_buffer[i] = c;
 	tx_buffer_head = i;
-	//enable transmit interrupt
-	UCSRB |=  (1<<UDRIE);
+	UCSRB |= (1<<UDRIE);
 	//sei();
 }
 

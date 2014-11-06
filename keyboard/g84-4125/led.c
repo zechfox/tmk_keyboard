@@ -23,5 +23,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* HHKB has no LEDs */
 void led_set(uint8_t usb_led)
 {
+    if (usb_led & (1<<USB_LED_CAPS_LOCK)) {
+        // output low
+        DDRD |= (1<<5);
+        PORTD &= ~(1<<5);
+    } else {
+        // Hi-Z
+        DDRB &= ~(1<<5);
+        PORTB &= ~(1<<5);
+    }
+    if (usb_led & (1<<USB_LED_NUM_LOCK)) {
+        // output low
+        DDRD |= (1<<6);
+        PORTD &= ~(1<<6);
+    } else {
+        // Hi-Z
+        DDRB &= ~(1<<6);
+        PORTB &= ~(1<<6);
+    }
+    if (usb_led & (1<<USB_LED_SCROLL_LOCK)) {
+        // output low
+        DDRD |= (1<<4);
+        PORTD &= ~(1<<4);
+    } else {
+        // Hi-Z
+        DDRB &= ~(1<<4);
+        PORTB &= ~(1<<4);
+    }	
 
 }

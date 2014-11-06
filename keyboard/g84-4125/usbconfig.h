@@ -238,11 +238,11 @@ section at the end of this file).
  * with libusb: 0x16c0/0x5dc.  Use this VID/PID pair ONLY if you understand
  * the implications!
  */
-#define USB_CFG_DEVICE_VERSION  0x00, 0x01
+#define USB_CFG_DEVICE_VERSION  0x04, 0x01
 /* Version number of the device: Minor number first, then major number.
  */
-#define USB_CFG_VENDOR_NAME     'C', 'h', 'e', 'r', 'r', 'y'
-#define USB_CFG_VENDOR_NAME_LEN 6
+#define USB_CFG_VENDOR_NAME     'z', 'e', 'c', 'h', 'f', 'o', 'x'
+#define USB_CFG_VENDOR_NAME_LEN 7
 /* These two values define the vendor name returned by the USB device. The name
  * must be given as a list of characters under single quotes. The characters
  * are interpreted as Unicode (UTF-16) entities.
@@ -251,8 +251,8 @@ section at the end of this file).
  * obdev's free shared VID/PID pair. See the file USB-IDs-for-free.txt for
  * details.
  */
-#define USB_CFG_DEVICE_NAME     'G', '8', '4', '-', '4', '1', '2', '5'
-#define USB_CFG_DEVICE_NAME_LEN 8
+#define USB_CFG_DEVICE_NAME     'C', 'H', 'E', 'R', 'R', 'Y', ' ', 'G', '8', '4', '-', '4', '1', '2', '5'
+#define USB_CFG_DEVICE_NAME_LEN 15
 /* Same as above for the device name. If you don't want a device name, undefine
  * the macros. See the file USB-IDs-for-free.txt before you assign a name if
  * you use a shared VID/PID.

@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "debug.h"
 #include "util.h"
 #include "matrix.h"
+#include "uart.h"
 
 
 #ifndef DEBOUNCE
@@ -77,7 +78,7 @@ uint8_t matrix_scan(void)
         if (matrix_debouncing[i] != cols) {
             matrix_debouncing[i] = cols;
             if (debouncing) {
-                debug("bounce!: "); debug_hex(debouncing); debug("\n");
+               // debug("bounce!: "); debug_hex(debouncing); debug("\n");
             }
             debouncing = DEBOUNCE;
         }
@@ -117,7 +118,7 @@ matrix_row_t matrix_get_row(uint8_t row)
 
 void matrix_print(void)
 {
-    print("\nr/c 0123456789ABCDEF\n");
+    //print("\nr/c 0123456789ABCDEF\n");
     for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
         phex(row); print(": ");
         pbin_reverse16(matrix_get_row(row));
@@ -154,11 +155,12 @@ static void  init_cols(void)
     PORTA = 0xFF;
     DDRB  &= 0x03;
     PORTB |=  0xFC;
+	SFIOR &= ~(1<<PUD); //enable pull-up
 }
 
 static matrix_row_t read_cols(void)
 {
-    return (((matrix_row_t)PINA << 6) & 0x3FC0) | ((PINB >> 2) & 0x3F);
+    return (((matrix_row_t)(~PINA) << 6) & 0x3FC0) | (((~PINB) >> 2) & 0x3F);
 }
 
 /* Row pin configuration
@@ -177,9 +179,9 @@ static void select_row(uint8_t row)
 {
     // Output low(DDR:1, PORT:0) to select
     //only 1 row select
-    DDRC  = (1 << row);
-    PORTD = ~(1 << row); 
+    //DDRC  = (1 << row);
+    //PORTC = ~(1 << row); 
     //continue select rows
     DDRC  |= (1 << row);
-    PORTD &= ~(1 << row); 
+    PORTC &= ~(1 << row); 
 }

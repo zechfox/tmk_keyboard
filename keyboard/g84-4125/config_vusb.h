@@ -18,13 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define VENDOR_ID       0x046A
-#define PRODUCT_ID      0x4125
+#define VENDOR_ID       0xFEED
+#define PRODUCT_ID      0xCAFE
+#define DEVICE_VER      0x0104
 // TODO: share these strings with usbconfig.h
 // Edit usbconfig.h to change these.
-#define MANUFACTURER    zechfox
-#define PRODUCT         Cherry G84-4125
-#define DESCRIPTION     zechfox keyboard firmware for Cherry G84-4125
+//#define MANUFACTURER    "zechfox"
+//#define PRODUCT         "G84-4125"
+//#define DESCRIPTION     "zechfox keyboard firmware for Cherry G84-4125"
 
 
 /* matrix size */

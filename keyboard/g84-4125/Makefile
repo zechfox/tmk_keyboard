@@ -24,7 +24,7 @@ CONFIG_H = config_vusb.h
 
 # V-USB debug level: To use ps2_usart.c level must be 0
 # ps2_usart.c requires USART to receive PS/2 signal.
-OPT_DEFS = -DDEBUG_LEVEL=1
+OPT_DEFS = -DDEBUG_LEVEL=0
 
 
 # MCU name, you MUST set this to match the board you are using
