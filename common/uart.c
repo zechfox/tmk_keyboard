@@ -131,9 +131,25 @@ ISR(USART_RX_vect)
 // Initialize the UART
 void uart_init(uint32_t baud)
 {
+        uint16_t baud_prescale = 0x0000;
+        bool u2x_enable = false;
 	cli();
-	uint16_t baud_prescale = ((F_CPU / (baud * 16UL))) - 1;
-	
+#ifndef FIX_BAUD_RATE
+        //enable 2X mode to get more accuracy 
+        if(baud > 38400)
+        {
+          u2x_enable = true;
+	  baud_prescale = ((F_CPU / (baud * 8UL))) - 1;
+        }
+        else
+	  baud_prescale = ((F_CPU / (baud * 16UL))) - 1;
+#else
+#warning "using fix baud rate"
+        //use WormFood's AVR baud rate calculator: http://www.wormfood.net/avrbaudcalc.php
+        //baud rate = 0x000C, 115200@12MHz, must enable U2X to get acceptable error. 
+        baud_prescale = 0x000C;  	
+        u2x_enable = true;
+#endif
 	// Set baud rate
 	UBRRL = (baud_prescale & 0xff);// Load lower 8-bits into the low byte of the UBRR register
 	UBRRH = ((baud_prescale & 0xff00) >> 8); 
@@ -143,7 +159,8 @@ void uart_init(uint32_t baud)
 	tx_buffer_head = tx_buffer_tail = 0;
 	rx_buffer_head = rx_buffer_tail = 0;
 	// Enable receiver and transmitter and receive complete interrupt 
-    UCSRB = ((1<<TXEN)|(1<<RXEN) | (1<<RXCIE));
+        UCSRA |= (u2x_enable << U2X); 
+        UCSRB = ((1<<TXEN)|(1<<RXEN) | (1<<RXCIE));
 	UCSRC = (1<<URSEL) | (1<<UCSZ1) | (1<<UCSZ0);
 	sei();
 }

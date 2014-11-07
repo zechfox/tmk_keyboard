@@ -53,7 +53,7 @@ MOUSEKEY_ENABLE = yes	# Mouse keys
 #COMMAND_ENABLE = yes    # Commands for debug and configuration
 #NKRO_ENABLE = yes	# USB Nkey Rollover
 #KEYMAP_SECTION_ENABLE = yes # Store keymap in eeprom
-
+OPT_DEFS += -DFIX_BAUD_RATE # fix baud rate at 115200 according to WormFood's AVR baud rate calculator
 
 
 #---------------- Programming Options --------------------------
