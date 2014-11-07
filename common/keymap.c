@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "action.h"
 #include "action_macro.h"
 #include "debug.h"
-
+#include "action_util.h"
 
 static action_t keycode_to_action(uint8_t keycode);
 
@@ -99,6 +99,12 @@ action_t action_for_key(uint8_t layer, key_t key)
             }
             return keycode_to_action(KC_BSPACE);
 #endif
+        case KC_GRAVE:
+            if (get_mods() & 0x04) {
+	        //LALT pressed
+                return keycode_to_action(KC_LGUI);
+            }
+            return keycode_to_action(KC_GRAVE);
         default:
             return keycode_to_action(keycode);
     }

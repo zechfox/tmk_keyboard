@@ -33,36 +33,23 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
      * ,-------------------------------------------------------------------------.
      * |Esc| F11| F12|  F3|  F4|  F5|  F6|  F7|  F8|  F9| F10|NLCK|PSCR|SLCK|PAUS|
      * |-------------------------------------------------------------------------|
-     * |    1|   2|   3|   4|   5|   6|   7|   8|   9|   O|   -|   =|  BSPC |HOME|
+     * |     |    |    |    |    |    |   7|   8|   9|   *|    |    |       |    |
      * |-------------------------------------------------------------------------|
-     * |Tab|   Q|   W|   E|   R|   T|   Y|   U|   I|   O|   P|   [|   ]|   \|WH_U|
+     * |   |    |    |    |    |    |    |   4|   5|   6|   -|    |    |    |WH_U|
      * |-------------------------------------------------------------------------|
-     * |CAPS|   A|   S|   D|   F|   G|   H|   J|   K|   L|   ;|   '|   Enter|WH_D|
+     * |    |    |    |    |    |    |    |   1|   2|   3|   +|   '|   Enter|WH_D|
      * |-------------------------------------------------------------------------|
-     * |  LSFT|   Z|   X|   C|   V|   B|   N|   M|   ,|   .|   /|  RSFT|MS_U| END|
+     * |      |    |    |    |    |    |    |   0|    |   .|   /|  RSFT|MS_U| END|
      * |-------------------------------------------------------------------------|
-     * |LCTL| FN0|LALT|LGUI|         SPC           |RALT| INS| DEL|MS_L|MS_D|MS_R|
+     * |LCTL| FN0|LALT|   |         SPC           |    |    |    |MS_L|MS_D|MS_R|
      */
 
-    /* Layer 1: HHKB mode (HHKB Fn)
-     * ,-----------------------------------------------------------.
-     * |Pwr| F1| F2| F3| F4| F5| F6| F7| F8| F9|F10|F11|F12|Ins|Del|
-     * |-----------------------------------------------------------|
-     * |Caps |   |   |   |   |   |   |   |Psc|Slk|Pus|Up |   |Backs|
-     * |-----------------------------------------------------------|
-     * |      |VoD|VoU|Mut|   |   |  *|  /|Hom|PgU|Lef|Rig|Enter   |
-     * |-----------------------------------------------------------|
-     * |        |   |   |   |   |   |  +|  -|End|PgD|Dow|      |   |
-     * `-----------------------------------------------------------'
-     *       |   |     |                       |     |   |
-     *       `-------------------------------------------'
-     */ 
     KEYMAP(ESC, F11,   F12,   F3,   F4,   F5,   F6,   F7,   F8,   F9,   F10,  NLCK,PSCR, SLCK,PAUS,   \
-           1,   2,   3,   4,   5,   6,   7,   8,   9,   0,   MINS,  EQL, BSPC,HOME,   \
-           TAB, Q,   W,   E,   R,   T,   Y,   U,   I,   O,   P,   LBRC,RBRC,BSLS, WH_U,      \
-           CAPS,A,   S,   D,   F,   G,   H,   J,   K,   L,   SCLN,QUOT,ENT,WH_D,             \
-           LSFT,Z,   X,   C,   V,   B,   N,   M,   COMM,DOT, SLSH,RSFT,MS_U, END,            \
-           LCTL,FN0,LALT,LGUI,          SPC,                RALT,INS,DEL,MS_L,MS_D,MS_R),
+           1,   2,   3,   4,   5,   6, KP_7, KP_8, KP_9, KP_ASTERISK,   MINS,  EQL, BSPC,HOME,   \
+           TAB, Q,   W,   E,   R,   T,   Y, KP_4, KP_5, KP_6, KP_MINUS,   LBRC,RBRC,BSLS, WH_U,      \
+           CAPS,A,   S,   D,   F,   G,   H,   KP_1, KP_2, KP_3, KP_PLUS,QUOT,KP_ENTER,WH_D,             \
+           LSFT,Z,   X,   C,   V,   B,   N,   KP_0,   COMM,KP_DOT, KP_SLASH,RSFT,MS_U, END,            \
+           LCTL,FN0,LALT, GRV,          SPC,                RALT,INS,DEL,MS_L,MS_D,MS_R),
 };
 
 
