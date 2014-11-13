@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "action_macro.h"
 #include "debug.h"
 #include "action_util.h"
+//4 debug only, remove it
+#include "uart.h"
 
 static action_t keycode_to_action(uint8_t keycode);
 
@@ -100,11 +102,27 @@ action_t action_for_key(uint8_t layer, key_t key)
             return keycode_to_action(KC_BSPACE);
 #endif
         case KC_GRAVE:
-            if (get_mods() & 0x04) {
-	        //LALT pressed
+            if (get_mods() & MOD_BIT(KC_LALT)) {
+	        //LALT pressed, delete LALT
+                del_mods(0x04);
+                uart_putchar(0x55);
                 return keycode_to_action(KC_LGUI);
             }
-            return keycode_to_action(KC_GRAVE);
+            else if(get_mods() & MOD_BIT(KC_LGUI)) 
+            {
+                uart_putchar(0x66);
+                return keycode_to_action(KC_LGUI);
+            }
+            uart_putchar(get_mods());
+            uart_putchar(0x77);
+            return keycode_to_action(KC_LGUI);
+        case KC_LALT:
+            if(get_mods() & MOD_BIT(KC_LGUI))
+            {
+                uart_putchar(0xaa);
+                return keycode_to_action(KC_LGUI);
+            }
+            return keycode_to_action(KC_LALT); 
         default:
             return keycode_to_action(keycode);
     }
