@@ -45,10 +45,10 @@ const uint8_t keymaps[][MATRIX_ROWS][MATRIX_COLS] PROGMEM = {
      */
 
     KEYMAP(ESC, F11,   F12,   F3,   F4,   F5,   F6,   F7,   F8,   F9,   F10,  NLCK,PSCR, SLCK,PAUS,   \
-           1,   2,   3,   4,   5,   6, KP_7, KP_8, KP_9, KP_ASTERISK,   MINS,  EQL, BSPC,HOME,   \
-           TAB, Q,   W,   E,   R,   T,   Y, KP_4, KP_5, KP_6, KP_MINUS,   LBRC,RBRC,BSLS, WH_U,      \
-           CAPS,A,   S,   D,   F,   G,   H,   KP_1, KP_2, KP_3, KP_PLUS,QUOT,KP_ENTER,WH_D,             \
-           LSFT,Z,   X,   C,   V,   B,   N,   KP_0,   COMM,KP_DOT, KP_SLASH,RSFT,MS_U, END,            \
+           1,   2,   3,   4,   5,   6,    7,   8,   9, PAST, MINS,   EQL,  BSPC,HOME,   \
+           TAB, Q,   W,   E,   R,   T,     Y,   4,   5,   6, PMNS,  LBRC,  RBRC,BSLS, WH_U,      \
+           CAPS,A,   S,   D,   F,   G,     H,   1,   2,   3, PPLS,  QUOT,  PENT,WH_D,             \
+           LSFT,Z,   X,   C,   V,   B,     N,   0, COMM, DOT, PSLS,  RSFT,  MS_U, END,            \
            LCTL,FN0,LALT, GRV,          SPC,                RALT,INS,DEL,MS_L,MS_D,MS_R),
 };
 

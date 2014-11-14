@@ -105,21 +105,16 @@ action_t action_for_key(uint8_t layer, key_t key)
             if (get_mods() & MOD_BIT(KC_LALT)) {
 	        //LALT pressed, delete LALT
                 del_mods(0x04);
-                uart_putchar(0x55);
                 return keycode_to_action(KC_LGUI);
             }
             else if(get_mods() & MOD_BIT(KC_LGUI)) 
             {
-                uart_putchar(0x66);
                 return keycode_to_action(KC_LGUI);
             }
-            uart_putchar(get_mods());
-            uart_putchar(0x77);
             return keycode_to_action(KC_LGUI);
         case KC_LALT:
             if(get_mods() & MOD_BIT(KC_LGUI))
             {
-                uart_putchar(0xaa);
                 return keycode_to_action(KC_LGUI);
             }
             return keycode_to_action(KC_LALT); 

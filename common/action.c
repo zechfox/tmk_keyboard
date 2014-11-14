@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "action_macro.h"
 #include "action_util.h"
 #include "action.h"
-
+#include "uart.h"
 #ifdef DEBUG_ACTION
 #include "debug.h"
 #else
@@ -283,6 +283,20 @@ void process_action(keyrecord_t *record)
                     break;
             }
             break;
+	#else
+	case ACT_LAYER_TAP:
+		switch (action.layer_tap.code) {
+			case OP_ON_OFF:
+                    event.pressed ? layer_on(action.layer_tap.val) :
+                                    layer_off(action.layer_tap.val);
+                    break;
+                case OP_OFF_ON:
+                    event.pressed ? layer_off(action.layer_tap.val) :
+                                    layer_on(action.layer_tap.val);
+                    break;
+				default:
+					break;
+			}
     #endif
 #endif
         /* Extentions */
