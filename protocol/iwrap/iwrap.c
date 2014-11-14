@@ -132,23 +132,6 @@ ISR(PCINT1_vect, ISR_BLOCK) // recv() runs away in case of ISR_NOBLOCK
             }
     }
 }
-#else
-/* receive buffer */
-#define MUX_RCV_BUF_SIZE RX_BUFFER_SIZE
-
-static char rcv_deq(void)
-{
-    char c = 0;
-    if (rx_buffer_head != rx_buffer_tail) {
-        c = rx_buffer[rx_buffer_tail++];
-        rx_buffer_tail %= MUX_RCV_BUF_SIZE;
-    }
-    return c;
-}
-static void rcv_clear(void)
-{
-    rx_buffer_tail = rx_buffer_head = 0;
-}
 #endif
 
 /*------------------------------------------------------------------*
@@ -287,7 +270,7 @@ void iwrap_call(void)
     iwrap_mux_send("SET BT PAIR");
     _delay_ms(500);
 
-    p = (char *)(rx_buffer + rx_buffer_tail);
+    p = (char *)get_rx_buf_tail();
     while (!strncmp(p, "SET BT PAIR", 11)) {
         p += 7;
         strncpy(p, "CALL", 4);
@@ -329,7 +312,7 @@ void iwrap_kill(void)
     _delay_ms(500);
 
     while ((c = rcv_deq()) && c != '\n') ;
-    if (strncmp((const char *)(rx_buffer + rx_buffer_tail), "LIST ", 5)) {
+    if (strncmp((const char *)get_rx_buf_tail(), "LIST ", 5)) {
         print("no connection to kill.\n");
         return;
     }
@@ -337,7 +320,7 @@ void iwrap_kill(void)
     for (uint8_t i = 10; i; i--)
         while ((c = rcv_deq()) && c != ' ') ;
 
-    char *p = (char *)(rx_buffer + rx_buffer_tail - 5);
+    char *p = (char *)(get_rx_buf_tail() - 5);
     strncpy(p, "KILL ", 5);
     strncpy(p + 22, "\n\0", 2);
     print_S(p);
@@ -352,7 +335,7 @@ void iwrap_unpair(void)
     iwrap_mux_send("SET BT PAIR");
     _delay_ms(500);
 
-    char *p = (char *)(rx_buffer + rx_buffer_tail);
+    char *p = (char *)get_rx_buf_tail();
     if (!strncmp(p, "SET BT PAIR", 11)) {
         strncpy(p+29, "\n\0", 2);
         print_S(p);
@@ -386,7 +369,7 @@ bool iwrap_failed(void)
 #else
 bool iwrap_failed(void)
 {
-    if (strncmp((const char *)rx_buffer, "SYNTAX ERROR", 12))
+    if (strncmp((const char *)get_rx_buf(), "SYNTAX ERROR", 12))
         return true;
     else
         return false;
@@ -415,7 +398,7 @@ uint8_t iwrap_check_connection(void)
     iwrap_mux_send("LIST");
     _delay_ms(100);
 
-    if (strncmp((const char *)rx_buffer, "LIST ", 5) || !strncmp((const char *)rx_buffer, "LIST 0", 6))
+    if (strncmp((const char *)get_rx_buf(), "LIST ", 5) || !strncmp((const char *)get_rx_buf(), "LIST 0", 6))
         connected = 0;
     else
         connected = 1;
