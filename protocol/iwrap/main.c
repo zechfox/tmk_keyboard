@@ -40,9 +40,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 static void sleep(uint8_t term);
+#ifndef NO_SUART_PORT
 static bool console(void);
 static bool console_command(uint8_t c);
 static uint8_t key2asc(uint8_t key);
+#endif
 
 
 /*
@@ -127,16 +129,17 @@ static uint16_t last_timer = 0;
 
 int main(void)
 {
+#ifndef __AVR_ATmega32__
     MCUSR = 0;
     clock_prescale_set(clock_div_1);
     WD_SET(WD_OFF);
-
+#endif
     // power saving: the result is worse than nothing... why?
     //pullup_pins();
     //set_prr();
 
 #ifdef PROTOCOL_VUSB
-    disable_vusb();
+	init_vusb();
 #endif
     uart_init(115200);
     keyboard_init();
@@ -144,6 +147,7 @@ int main(void)
 
     // TODO: move to iWRAP/suart file
     print("suart init\n");
+#ifndef NO_SUART_PORT
     // suart init
     // PC4: Tx Output IDLE(Hi)
     PORTC |= (1<<4);
@@ -154,7 +158,7 @@ int main(void)
     // suart receive interrut(PC5/PCINT13)
     PCMSK1 = 0b00100000;
     PCICR  = 0b00000010;
-
+#endif
     host_set_driver(iwrap_driver());
 
     print("iwrap_init()\n");
@@ -173,7 +177,11 @@ int main(void)
             vusb_transfer_keyboard();
 #endif
         // TODO: depricated
-        if (matrix_is_modified() || console()) {
+        if (matrix_is_modified() 
+#ifndef NO_SUART_PORT
+		|| console()
+#endif
+        ) {
             last_timer = timer_read();
             sleeping = false;
         } else if (!sleeping && timer_elapsed(last_timer) > 4000) {
@@ -191,6 +199,7 @@ int main(void)
         }
     }
 }
+#ifndef __AVR_ATmega32__
 
 static void sleep(uint8_t term)
 {
@@ -206,7 +215,12 @@ static void sleep(uint8_t term)
 
     WD_SET(WD_OFF);
 }
-
+#else
+static void sleep(uint8_t term)
+{
+}
+#endif
+#ifndef NO_SUART_PORT
 static bool console(void)
 {
         // Send to Bluetoot module WT12
@@ -374,3 +388,6 @@ static uint8_t key2asc(uint8_t key)
         default: return 0x00;
     }
 }
+#endif
+
+

@@ -52,6 +52,7 @@ static uint8_t connected = 0;
 //static uint8_t channel = 1;
 
 /* iWRAP buffer */
+#ifndef NO_SUART_PORT
 #define MUX_BUF_SIZE 64
 static char buf[MUX_BUF_SIZE];
 static uint8_t snd_pos = 0;
@@ -131,7 +132,24 @@ ISR(PCINT1_vect, ISR_BLOCK) // recv() runs away in case of ISR_NOBLOCK
             }
     }
 }
+#else
+/* receive buffer */
+#define MUX_RCV_BUF_SIZE RX_BUFFER_SIZE
 
+static char rcv_deq(void)
+{
+    char c = 0;
+    if (rx_buffer_head != rx_buffer_tail) {
+        c = rx_buffer[rx_buffer_tail++];
+        rx_buffer_tail %= MUX_RCV_BUF_SIZE;
+    }
+    return c;
+}
+static void rcv_clear(void)
+{
+    rx_buffer_tail = rx_buffer_head = 0;
+}
+#endif
 
 /*------------------------------------------------------------------*
  * iWRAP communication
@@ -160,7 +178,7 @@ void iwrap_send(const char *s)
     while (*s)
         xmit(*s++);
 }
-
+#ifndef NO_SUART_PORT
 /* send buffer */
 void iwrap_buf_add(uint8_t c)
 {
@@ -261,6 +279,89 @@ void iwrap_unpair(void)
         iwrap_mux_send(p);
     }
 }
+#else
+void iwrap_call(void)
+{
+    char *p;
+
+    iwrap_mux_send("SET BT PAIR");
+    _delay_ms(500);
+
+    p = (char *)(rx_buffer + rx_buffer_tail);
+    while (!strncmp(p, "SET BT PAIR", 11)) {
+        p += 7;
+        strncpy(p, "CALL", 4);
+        strncpy(p+22, " 11 HID\n\0", 9);
+        print_S(p);
+        iwrap_mux_send(p);
+        // TODO: skip to next line
+        p += 57;
+
+        DEBUG_LED_CONFIG;
+        DEBUG_LED_ON;
+        _delay_ms(500);
+        DEBUG_LED_OFF;
+        _delay_ms(500);
+        DEBUG_LED_ON;
+        _delay_ms(500);
+        DEBUG_LED_OFF;
+        _delay_ms(500);
+        DEBUG_LED_ON;
+        _delay_ms(500);
+        DEBUG_LED_OFF;
+        _delay_ms(500);
+        DEBUG_LED_ON;
+        _delay_ms(500);
+        DEBUG_LED_OFF;
+        _delay_ms(500);
+        DEBUG_LED_ON;
+        _delay_ms(500);
+        DEBUG_LED_OFF;
+        _delay_ms(500);
+    }
+    iwrap_check_connection();
+}
+
+void iwrap_kill(void)
+{
+    char c;
+    iwrap_mux_send("LIST");
+    _delay_ms(500);
+
+    while ((c = rcv_deq()) && c != '\n') ;
+    if (strncmp((const char *)(rx_buffer + rx_buffer_tail), "LIST ", 5)) {
+        print("no connection to kill.\n");
+        return;
+    }
+    // skip 10 'space' chars
+    for (uint8_t i = 10; i; i--)
+        while ((c = rcv_deq()) && c != ' ') ;
+
+    char *p = (char *)(rx_buffer + rx_buffer_tail - 5);
+    strncpy(p, "KILL ", 5);
+    strncpy(p + 22, "\n\0", 2);
+    print_S(p);
+    iwrap_mux_send(p);
+    _delay_ms(500);
+
+    iwrap_check_connection();
+}
+
+void iwrap_unpair(void)
+{
+    iwrap_mux_send("SET BT PAIR");
+    _delay_ms(500);
+
+    char *p = (char *)(rx_buffer + rx_buffer_tail);
+    if (!strncmp(p, "SET BT PAIR", 11)) {
+        strncpy(p+29, "\n\0", 2);
+        print_S(p);
+        iwrap_mux_send(p);
+    }
+}
+
+#endif
+
 
 void iwrap_sleep(void)
 {
@@ -274,7 +375,7 @@ void iwrap_sniff(void)
 void iwrap_subrate(void)
 {
 }
-
+#ifndef NO_SUART_PORT
 bool iwrap_failed(void)
 {
     if (strncmp(rcv_buf, "SYNTAX ERROR", 12))
@@ -282,23 +383,45 @@ bool iwrap_failed(void)
     else
         return false;
 }
+#else
+bool iwrap_failed(void)
+{
+    if (strncmp((const char *)rx_buffer, "SYNTAX ERROR", 12))
+        return true;
+    else
+        return false;
+}
+#endif
 
 uint8_t iwrap_connected(void)
 {
     return connected;
 }
-
+#ifndef NO_SUART_PORT
 uint8_t iwrap_check_connection(void)
 {
     iwrap_mux_send("LIST");
     _delay_ms(100);
 
-    if (strncmp(rcv_buf, "LIST ", 5) || !strncmp(rcv_buf, "LIST 0", 6))
+    if (strncmp(rcv_buf, "LIST ", 5) || !strncmp((const char *)rcv_buf, "LIST 0", 6))
         connected = 0;
     else
         connected = 1;
     return connected;
 }
+#else
+uint8_t iwrap_check_connection(void)
+{
+    iwrap_mux_send("LIST");
+    _delay_ms(100);
+
+    if (strncmp((const char *)rx_buffer, "LIST ", 5) || !strncmp((const char *)rx_buffer, "LIST 0", 6))
+        connected = 0;
+    else
+        connected = 1;
+    return connected;
+}
+#endif
 
 
 /*------------------------------------------------------------------*

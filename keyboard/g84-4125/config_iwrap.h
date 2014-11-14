@@ -29,8 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* matrix size */
 #define MATRIX_ROWS 8
-#define MATRIX_COLS 8
-
+#define MATRIX_COLS 14 
 /* key combination for command */
 #define IS_COMMAND() (keyboard_report->mods == (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT))) 
 
@@ -40,12 +39,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SUART_OUT_PORT  PORTC
 #define SUART_OUT_BIT   4
 
-
 #define DEBUG_LED 1
 #define DEBUG_LED_CONFIG    (DDRD |= (1<<4))
 #define DEBUG_LED_OFF       (PORTD |= (1<<4))
 #define DEBUG_LED_ON        (PORTD &= ~(1<<4))
-
 /* period of tapping(ms) */
 #define TAPPING_TERM    300
 /* tap count needed for toggling a feature */
