@@ -250,12 +250,47 @@ ISR(USART_RXC_vect)
 	uint8_t c, i;
 
 	c = UDR;
+	#ifdef NO_SUART_PORT
+	static volatile uint8_t mux_state = 0xff;
+    static volatile uint8_t mux_link = 0xff;
+	switch (mux_state) {
+        case 0xff: // SOF
+            if (c == 0xbf)
+                mux_state--;
+            break;
+        case 0xfe: // Link
+            mux_state--;
+            mux_link = c;
+            break;
+        case 0xfd: // Flags
+            mux_state--;
+            break;
+        case 0xfc: // Length
+            mux_state = c;
+            break;
+        case 0x00:
+            mux_state = 0xff;
+            mux_link = 0xff;
+            break;
+        default:
+            if (mux_state--) {
+				i = rx_buffer_head + 1;
+					if (i >= RX_BUFFER_SIZE) i = 0;
+					if (i != rx_buffer_tail) {
+						rx_buffer[i] = c;
+						rx_buffer_head = i;
+					}
+
+            }
+    }
+	#else
 	i = rx_buffer_head + 1;
 	if (i >= RX_BUFFER_SIZE) i = 0;
 	if (i != rx_buffer_tail) {
 		rx_buffer[i] = c;
 		rx_buffer_head = i;
 	}
+	#endif
 }
 
 #endif
