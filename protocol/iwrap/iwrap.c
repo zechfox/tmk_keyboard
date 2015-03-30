@@ -274,33 +274,10 @@ void iwrap_call(void)
     while (!strncmp(p, "SET BT PAIR", 11)) {
         p += 7;
         strncpy(p, "CALL", 4);
-        strncpy(p+22, " 11 HID\n\0", 9);
-        print_S(p);
+        strncpy(p+22, " 11 HID", 8);
         iwrap_mux_send(p);
         // TODO: skip to next line
         p += 57;
-
-        DEBUG_LED_CONFIG;
-        DEBUG_LED_ON;
-        _delay_ms(500);
-        DEBUG_LED_OFF;
-        _delay_ms(500);
-        DEBUG_LED_ON;
-        _delay_ms(500);
-        DEBUG_LED_OFF;
-        _delay_ms(500);
-        DEBUG_LED_ON;
-        _delay_ms(500);
-        DEBUG_LED_OFF;
-        _delay_ms(500);
-        DEBUG_LED_ON;
-        _delay_ms(500);
-        DEBUG_LED_OFF;
-        _delay_ms(500);
-        DEBUG_LED_ON;
-        _delay_ms(500);
-        DEBUG_LED_OFF;
-        _delay_ms(500);
     }
     iwrap_check_connection();
 }

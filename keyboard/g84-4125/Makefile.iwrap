@@ -60,7 +60,7 @@ MOUSEKEY_ENABLE = yes	# Mouse keys
 #NKRO_ENABLE = yes	# USB Nkey Rollover
 OPT_DEFS += -DNO_SUART_PORT
 OPT_DEFS += -DNO_ACTION_TAPPING
-OPT_DEFS += -DPROTOCOL_VUSB
+#OPT_DEFS += -DPROTOCOL_VUSB
 
 #---------------- Programming Options --------------------------
 AVRDUDE = avrdude

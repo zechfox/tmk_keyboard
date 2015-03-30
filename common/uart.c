@@ -33,7 +33,7 @@
 #include "uart.h"
 
 // These buffers may be any size from 2 to 256 bytes.
-#define RX_BUFFER_SIZE 64
+#define RX_BUFFER_SIZE 256
 #define TX_BUFFER_SIZE 40
 
 static volatile uint8_t tx_buffer[TX_BUFFER_SIZE];
@@ -277,7 +277,7 @@ ISR(USART_RXC_vect)
 				i = rx_buffer_head + 1;
 					if (i >= RX_BUFFER_SIZE) i = 0;
 					if (i != rx_buffer_tail) {
-						rx_buffer[i] = c;
+						rx_buffer[rx_buffer_head] = c;
 						rx_buffer_head = i;
 					}
 
@@ -287,7 +287,7 @@ ISR(USART_RXC_vect)
 	i = rx_buffer_head + 1;
 	if (i >= RX_BUFFER_SIZE) i = 0;
 	if (i != rx_buffer_tail) {
-		rx_buffer[i] = c;
+		rx_buffer[rx_buffer_head] = c;
 		rx_buffer_head = i;
 	}
 	#endif
