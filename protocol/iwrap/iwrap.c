@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "host_driver.h"
 #include "iwrap.h"
 #include "print.h"
+#include <avr/eeprom.h>
 
 
 /* iWRAP MUX mode utils. 3.10 HID raw mode(iWRAP_HID_Application_Note.pdf) */
@@ -265,17 +266,26 @@ void iwrap_unpair(void)
 #else
 void iwrap_call(void)
 {
-    char *p;
-	char c;
+    //char *p;
+	//char c;
 	uint8_t i = 0;
-
+    char *pairCmd = "SET BT PAIR REPLACE_ME_BY_MAC 11 HID";
     //pair known remote device
-    iwrap_mux_send("SET BT PAIR");
-    _delay_ms(500);
-
-    p = (char *)get_rx_buf();
+    //iwrap_mux_send("SET BT PAIR");
+    //_delay_ms(500);
+	paired_device_info_t paired_device_info;
+    while(!eeprom_is_ready());
+	eeprom_read_block(&paired_device_info, PAIRED_DEVICE_INFO_ADDR, sizeof(paired_device_info_t));
+		
+    //p = (char *)get_rx_buf();
 	for(i = 0;i < 3;i++)
 	{
+	  strncpy(pairCmd+12, paired_device_info.macAddr[i], 17);
+	  iwrap_mux_send(pairCmd);
+      _delay_ms(500);
+	  if(iwrap_check_connection())
+		break;
+	#if 0
 	  if(0 == strncmp(p, "SET BT PAIR", 11))
 	  {
 	    p += 7;
@@ -286,6 +296,7 @@ void iwrap_call(void)
 		if(iwrap_check_connection())
 			break;
 	  }
+	  #endif
 	}
 
 	if(3 == i)
@@ -315,11 +326,18 @@ void iwrap_call(void)
 		    macAddr[k] = rcv_deq();
 		  }
 		  strncpy(callCmd + 5, macAddr, 17);
-		  iwrap_mux_send(p);
+		  iwrap_mux_send(callCmd);
 		  _delay_ms(500);
 
 		  if(iwrap_check_connection())
+		  {
+		    uint8_t currentPairedIndex = (paired_device_info.lastPairedIndex + 1) % 3;
+			strncpy(paired_device_info.macAddr[currentPairedIndex], macAddr, 17);
+			paired_device_info.lastPairedIndex = currentPairedIndex;
+			while(!eeprom_is_ready());
+			eeprom_update_block(&paired_device_info, PAIRED_DEVICE_INFO_ADDR, sizeof(paired_device_info_t));
 			break;
+		  }
 		}
 		else
 		  _delay_ms(100);

@@ -25,6 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* enable iWRAP MUX mode */
 #define MUX_MODE
+#define PAIRED_DEVICE_INFO_ADDR 0
+typedef struct {
+  uint8_t lastPairedIndex;
+  char macAddr[3][17];
+} paired_device_info_t;
 
 
 host_driver_t *iwrap_driver(void);
