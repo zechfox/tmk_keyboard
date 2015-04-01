@@ -137,10 +137,11 @@ int main(void)
     // power saving: the result is worse than nothing... why?
     //pullup_pins();
     //set_prr();
+    bool isUsbConnected = false;
+    PORTC |= (1<<7);
+    DDRC  &= ~(1<<7);
 
-#ifdef PROTOCOL_VUSB
-	init_vusb();
-#endif
+    isUsbConnected = ((PINC >> 7) & 0x1);
     uart_init(115200);
     keyboard_init();
     print("\nSend BREAK for UART Console Commands.\n");
@@ -159,23 +160,30 @@ int main(void)
     PCMSK1 = 0b00100000;
     PCICR  = 0b00000010;
 #endif
-    host_set_driver(iwrap_driver());
-
-    print("iwrap_init()\n");
-    iwrap_init();
-    iwrap_call();
+    if(isUsbConnected)
+    {
+      init_vusb();
+	  host_set_driver(vusb_driver());
+    }
+	else
+	{
+	  host_set_driver(iwrap_driver());
+	  print("iwrap_init()\n");
+      iwrap_init();
+      iwrap_call();
+	}
 
     last_timer = timer_read();
     while (true) {
-#ifdef PROTOCOL_VUSB
-        if (host_get_driver() == vusb_driver())
+
+        if (isUsbConnected)
             usbPoll();
-#endif
+
         keyboard_task();
-#ifdef PROTOCOL_VUSB
-        if (host_get_driver() == vusb_driver())
+
+        if (isUsbConnected)
             vusb_transfer_keyboard();
-#endif
+
         // TODO: depricated
         if (matrix_is_modified() 
 #ifndef NO_SUART_PORT
@@ -190,7 +198,7 @@ int main(void)
         }
 
         // TODO: suspend.h
-        if (host_get_driver() == iwrap_driver()) {
+        if (!isUsbConnected) {
             if (sleeping && !insomniac) {
                 _delay_ms(1);   // wait for UART to send
                 iwrap_sleep();

@@ -266,20 +266,65 @@ void iwrap_unpair(void)
 void iwrap_call(void)
 {
     char *p;
+	char c;
+	uint8_t i = 0;
 
+    //pair known remote device
     iwrap_mux_send("SET BT PAIR");
     _delay_ms(500);
 
-    p = (char *)get_rx_buf_tail();
-    while (!strncmp(p, "SET BT PAIR", 11)) {
-        p += 7;
+    p = (char *)get_rx_buf();
+	for(i = 0;i < 3;i++)
+	{
+	  if(0 == strncmp(p, "SET BT PAIR", 11))
+	  {
+	    p += 7;
         strncpy(p, "CALL", 4);
         strncpy(p+22, " 11 HID", 8);
         iwrap_mux_send(p);
-        // TODO: skip to next line
-        p += 57;
-    }
-    iwrap_check_connection();
+		_delay_ms(500);
+		if(iwrap_check_connection())
+			break;
+	  }
+	}
+
+	if(3 == i)
+	{
+	  //didn't connect to known remote device
+	  //clear receive buffer, prepare for receive RING
+	  rcv_clear();
+	  memset(get_rx_buf(), 0x00, RX_BUFFER_SIZE);
+	  while(1)
+	  {
+		if(('R' == rcv_deq()) 
+			&& ('I' == rcv_deq())
+			&& ('N' == rcv_deq())
+			&& ('G' == rcv_deq()))
+		{
+		  char *callCmd = "CALL REPLACE_ME_BY_MAC 11 HID";
+		  char macAddr[17];
+		  //pop up space
+		  rcv_deq();
+		  //pop up link id
+		  rcv_deq();
+		  //pop up space
+		  rcv_deq();
+		  //pop up mac address
+		  for(int k = 0;k < 17;k++)
+		  {
+		    macAddr[k] = rcv_deq();
+		  }
+		  strncpy(callCmd + 5, macAddr, 17);
+		  iwrap_mux_send(p);
+		  _delay_ms(500);
+
+		  if(iwrap_check_connection())
+			break;
+		}
+		else
+		  _delay_ms(100);
+	  }	
+	}
 }
 
 void iwrap_kill(void)

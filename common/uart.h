@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+// These buffers may be any size from 2 to 256 bytes.
+#define RX_BUFFER_SIZE 256
+#define TX_BUFFER_SIZE 40
 void uart_init(uint32_t baud);
 void uart_putchar(uint8_t c);
 uint8_t uart_getchar(void);
