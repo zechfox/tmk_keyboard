@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* enable iWRAP MUX mode */
 #define MUX_MODE
-#define PAIRED_DEVICE_INFO_ADDR 0
+#define PAIRED_DEVICE_INFO_ADDR 1
 typedef struct {
   uint8_t lastPairedIndex;
   char macAddr[3][17];

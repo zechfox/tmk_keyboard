@@ -138,10 +138,11 @@ int main(void)
     //pullup_pins();
     //set_prr();
     bool isUsbConnected = false;
-    PORTC |= (1<<7);
-    DDRC  &= ~(1<<7);
+    //PORTD |= (1<<7);
+    //DDRD  &= ~(1<<7);
+	init_vusb();
 
-    isUsbConnected = ((PINC >> 7) & 0x1);
+    //isUsbConnected = ((PIND >> 7) & 0x1);
     uart_init(115200);
     keyboard_init();
     print("\nSend BREAK for UART Console Commands.\n");
@@ -160,18 +161,19 @@ int main(void)
     PCMSK1 = 0b00100000;
     PCICR  = 0b00000010;
 #endif
+    
     if(isUsbConnected)
     {
-      init_vusb();
+      
 	  host_set_driver(vusb_driver());
     }
 	else
 	{
 	  host_set_driver(iwrap_driver());
-	  print("iwrap_init()\n");
       iwrap_init();
       iwrap_call();
 	}
+	
 
     last_timer = timer_read();
     while (true) {
@@ -181,7 +183,7 @@ int main(void)
 
         keyboard_task();
 
-        if (isUsbConnected)
+       if (isUsbConnected)
             vusb_transfer_keyboard();
 
         // TODO: depricated

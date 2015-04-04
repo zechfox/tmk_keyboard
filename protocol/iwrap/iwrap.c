@@ -269,7 +269,7 @@ void iwrap_call(void)
     //char *p;
 	//char c;
 	uint8_t i = 0;
-    char *pairCmd = "SET BT PAIR REPLACE_ME_BY_MAC 11 HID";
+    char *callCmd = "CALL REPLACE_ME_BY_MAC 11 HID";
     //pair known remote device
     //iwrap_mux_send("SET BT PAIR");
     //_delay_ms(500);
@@ -280,11 +280,12 @@ void iwrap_call(void)
     //p = (char *)get_rx_buf();
 	for(i = 0;i < 3;i++)
 	{
-	  strncpy(pairCmd+12, paired_device_info.macAddr[i], 17);
-	  iwrap_mux_send(pairCmd);
-      _delay_ms(500);
+	  strncpy(callCmd+5, paired_device_info.macAddr[i], 17);
+	  iwrap_mux_send(callCmd);
+      _delay_ms(5000);
 	  if(iwrap_check_connection())
-		break;
+		return;
+	  _delay_ms(500);
 	#if 0
 	  if(0 == strncmp(p, "SET BT PAIR", 11))
 	  {
@@ -312,7 +313,7 @@ void iwrap_call(void)
 			&& ('N' == rcv_deq())
 			&& ('G' == rcv_deq()))
 		{
-		  char *callCmd = "CALL REPLACE_ME_BY_MAC 11 HID";
+		  
 		  char macAddr[17];
 		  //pop up space
 		  rcv_deq();
@@ -335,9 +336,10 @@ void iwrap_call(void)
 			strncpy(paired_device_info.macAddr[currentPairedIndex], macAddr, 17);
 			paired_device_info.lastPairedIndex = currentPairedIndex;
 			while(!eeprom_is_ready());
-			eeprom_update_block(&paired_device_info, PAIRED_DEVICE_INFO_ADDR, sizeof(paired_device_info_t));
-			break;
+			eeprom_write_block(&paired_device_info, PAIRED_DEVICE_INFO_ADDR, sizeof(paired_device_info_t));
+			return;
 		  }
+		  _delay_ms(500);
 		}
 		else
 		  _delay_ms(100);
